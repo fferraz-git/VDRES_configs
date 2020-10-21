@@ -1,0 +1,93 @@
+***** Master IRF configuration *****
+--- Configure and activate IRF interfaces ---
+[Master]interface Ten-GigabitEthernet 1/1/1
+[Master-Ten-GigabitEthernet1/1/1]shutdown
+[Master-Ten-GigabitEthernet1/1/1]quit
+[Master]irf-port 1/1
+[Master-irf-port1/1]port group interface Ten-GigabitEthernet 1/1/1
+Info: You are recommended to save the configuration after completing your IRF configuration; otherwise, it may be
+lost after system reboot.
+[Master-irf-port1/1]quit
+[Master]interface Ten-GigabitEthernet 1/1/1
+[Master-Ten-GigabitEthernet1/1/1]undo shut 
+[Master-Ten-GigabitEthernet1/1/1]quit
+[Master]irf-port-configuration active
+[Master]save force
+Validating file. Please wait.....................
+Saved the current configuration to mainboard device successfully.
+Configuration is saved to device successfully.
+
+
+***** Slave IRF configuration *****
+--- Renumber switch ---
+[Slave]irf member 1 renumber 2
+Warning: Renumbering the switch number may result in configuration change or loss. Continue?[Y/N]y
+[Slave]save force
+Validating file. Please wait.....................
+Saved the current configuration to mainboard device successfully.
+Configuration is saved to device successfully.
+<Slave>reboot
+Start to check configuration with next startup configuration file, please wait.........DONE!
+This command will reboot the device. Continue? [Y/N]:y
+--- Switch reboots ---
+--- Configure and activate IRF interfaces ---
+[Slave]interface Ten-GigabitEthernet 2/1/1
+[Slave-Ten-GigabitEthernet2/1/1]shutdown
+[Slave-Ten-GigabitEthernet2/1/1]quit
+[Slave]irf-port 2/2
+[Slave-irf-port2/2]port group interface Ten-GigabitEthernet 2/1/1
+Info: You are recommended to save the configuration after completing your IRF configuration; otherwise, it may be
+lost after system reboot.
+[Slave-irf-port2/2]quit
+[Slave]interface Ten-GigabitEthernet 2/1/1
+[Slave-Ten-GigabitEthernet2/1/1]undo shutdown
+[Slave-Ten-GigabitEthernet2/1/1]quit
+[Slave]save force Validating file. Please wait.....................
+Saved the current configuration to mainboard device successfully.
+Configuration is saved to device successfully.
+[Slave]irf-port-configuration active
+--- Slave reboot automatically ----
+
+
+****** IRF verification *****
+<Master>display irf
+Switch Role Priority CPU-Mac Description
+*+1 Master 1 b8af-67e0-d289 -----
+2 Slave 1 b8af-67e1-1309 -----
+--------------------------------------------------
+* indicates the device is the master.
++ indicates the device through which the user logs in.
+The Bridge MAC of the IRF is: b8af-67e0-d276
+Auto upgrade : yes
+Mac persistent : 6 min
+Domain ID : 0
+<Master>display irf configuration
+MemberID NewID IRF-Port1 IRF-Port2
+1 1 Ten-GigabitEthernet1/1/1 disable
+2 2 disable Ten-GigabitEthernet2/1/1
+<Master>display irf topology
+Topology Info
+-------------------------------------------------------------------------
+IRF-Port1 IRF-Port2
+Switch Link neighbor Link neighbor Belong To
+2 DIS -- UP 1 b8af-67e0-d289
+1 UP 2 DIS -- b8af-67e0-d289
+<Master>display device
+Slot 1
+SubSNo PortNum PCBVer FPGAVer CPLDVer BootRomVer AddrLM Type State
+0 28 REV.C NULL 002 707 IVL MAIN Normal
+1 2 REV.A NULL NULL NULL IVL 2*10GE Normal
+Slot 2
+SubSNo PortNum PCBVer FPGAVer CPLDVer BootRomVer AddrLM Type State
+0 28 REV.C NULL 002 707 IVL MAIN Normal
+1 2 REV.A NULL NULL NULL IVL 2*10GE Normal
+<Master>display interface brief
+
+
+***** Physical interconnect *****
+<Master>display lldp neighbor-information list
+System Name Local Interface Chassis ID Port ID
+Slave XGE1/1/1 b8af-67e1-12f6 Ten-GigabitEthernet1/1/1
+<Slave>display lldp neighbor-information list
+System Name Local Interface Chassis ID Port ID
+Master XGE1/1/1 b8af-67e0-d276 Ten-GigabitEthernet1/1/1
